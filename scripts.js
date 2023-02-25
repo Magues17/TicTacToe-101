@@ -14,6 +14,8 @@ let board = [
   ["", "", ""],
 ];
 
+let gameOver = false
+
 // this "handleClick" function is called when a box is clicked. Here, "element" will hold the same value as "this" does in the HTML.
 // "this" is a special word in JS but "element" could have been "thing" or "el" or whatever we wanted it to be as long as we use it again in the "console.log" statement
 const handleClick = (element) => {
@@ -22,9 +24,9 @@ const handleClick = (element) => {
 
   // this next line prevents an X being changed to an O or an O being changed to an X by...
   //  checking to see if the square clicked has anything in it, if not continue
-  if (!document.getElementById(element.id).innerHTML) {
+  if ((!document.getElementById(element.id).innerHTML) && (!gameOver)) {
     addMarker(element.id);
-  }
+  } else checkForWin;
 };
 
 // this function places the "currentMarker" inside the HTML element that was clicked and calls the "changeMarker" function.
@@ -49,25 +51,36 @@ const addMarker = (id) => {
   // document
   // .innerHTML
 
-  changeMarker(currentMarker);
-};
-const checkForWin = () => {
-  if (horizontalWin() || verticalWin() || diagonalWin()) {
-    window.alert(`Player ${currentMarker} won!`);
-  } else {
-    changeMarker();
-  }
+  checkForWin();
 };
 
 // This "changeMarker" function changes "X" to "O" in the "currentMarker" variable or "O" to "X"
+// const changeMarker = () => {
+//   if (currentMarker === "X") {
+//     currentMarker = "O";
+//   } else {
+//     currentMarker = "X";
+//   }
+// };
+
+const xClass = "x";
+const oClass = "o";
+
+
+
+
+
 const changeMarker = () => {
   if (currentMarker === "X") {
     currentMarker = "O";
+    document.querySelectorAll("." + xClass).forEach(cell => cell.classList.remove(xClass));
+    document.querySelectorAll("." + oClass).forEach(cell => cell.classList.add(oClass));
   } else {
     currentMarker = "X";
-  } 
+    document.querySelectorAll("." + oClass).forEach(cell => cell.classList.remove(oClass));
+    document.querySelectorAll("." + xClass).forEach(cell => cell.classList.add(xClass));
+  }
 };
-
 
 const horizontalWin = () => {
   // Your code here to check for horizontal wins
@@ -134,6 +147,20 @@ const diagonalWin = () => {
   }
 };
 
+const checkForWin = () => {
+  if (horizontalWin() || verticalWin() || diagonalWin()) {
+      gameOver = true
+    
+      setTimeout(function () {
+          window.alert(`Player ${currentMarker} won!`);
+      }, 100);
+  
+    // window.alert(`Player ${currentMarker} won!`);
+  } else {
+    changeMarker();
+  }
+};
+
 // This "resetBoard" function is called when the user clicks on the "Restart" button.
 const resetBoard = () => {
   // @TODO-3: To make your "Restart" button work you'll need to build a line of code here that:
@@ -145,13 +172,20 @@ const resetBoard = () => {
   // =
   // document
   // const
-
+  board = [
+    ["", "", ""],
+    ["", "", ""],
+    ["", "", ""],
+  ];
   const squares = document.getElementsByTagName("td");
+
+
 
   // loops over the HTML Collection of TDs and clears out the Xs and Os
   for (i = 0; i < squares.length; i++) {
     // will log out the id of each square as it loops over them.
     console.log(squares[i].id);
+    gameOver = false
 
     // sets the innerHTML to null to replace the "X" or "O"
     squares[i].innerHTML = null;
